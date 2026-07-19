@@ -10,14 +10,9 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Handler retry untuk komponen ErrorState agar tetap bisa memicu fetch ulang
-  const handleRetry = () => {
-    window.location.reload();
-  };
+  const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
-    // Deklarasi fungsi langsung di dalam useEffect agar dependensinya bersih
     const loadData = async () => {
       try {
         setIsLoading(true);
@@ -30,49 +25,51 @@ export default function HomePage() {
         setIsLoading(false);
       }
     };
-
     loadData();
-  }, []); // Kosong karena hanya berjalan sekali saat komponen pertama kali dimuat
+  }, []);
 
-  // Filter produk berdasarkan input pencarian (Search Feature)
   const filteredProducts = useMemo(() => {
-    return products.filter((product) =>
-      product.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [products, searchTerm]);
+    return products.filter((product) => {
+      const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = activeCategory ? product.category_id === activeCategory : true;
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, searchTerm, activeCategory]);
 
   return (
     <div>
-      {/* Navbar Desoria */}
-      <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <Navbar activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
       
-      <main className="container" style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-        <h2 style={{ marginBottom: "20px" }}>Daftar Produk</h2>
+      <main className="container">
+        {/* Header Sapaan Eksklusif Sesuai Gambar Referensi */}
+        <div className="hero-header">
+          <p className="hero-sub">Halo!</p>
+          <h1 className="hero-title">Jelajahi Produk</h1>
+        </div>
 
-        {/* Tangga Conditional UI */}
+        {/* Baris Pencarian & Filter Horizontal */}
+        <div className="browse-filter-bar">
+          <span className="browse-label">Browse By</span>
+          
+          <input
+            type="text"
+            placeholder="Cari produk di Desoria..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input-modern"
+          />
+        </div>
+
+        {/* Tangga Conditional UI dan Grid */}
         {isLoading && <LoadingState />}
-
-        {!isLoading && error && (
-          <ErrorState message={error} onRetry={handleRetry} />
+        {!isLoading && error && <ErrorState message={error} onRetry={() => window.location.reload()} />}
+        
+        {!isLoading && !error && filteredProducts.length === 0 && (
+          <div className="not-found-state">Produk tidak ditemukan.</div>
         )}
 
-        {/* Kondisi Empty State (Data dari API memang kosong sejak awal) */}
-        {!isLoading && !error && products.length === 0 && (
-          <div className="empty-state" style={{ textAlign: "center", padding: "40px", color: "#666" }}>
-            Belum ada produk terdaftar di marketplace.
-          </div>
-        )}
-
-        {/* Kondisi Not Found (Hasil pencarian kata kunci tidak ada) */}
-        {!isLoading && !error && products.length > 0 && filteredProducts.length === 0 && (
-          <div className="not-found-state" style={{ textAlign: "center", padding: "40px", color: "#666" }}>
-            Produk "{searchTerm}" tidak ditemukan.
-          </div>
-        )}
-
-        {/* Render Produk Menggunakan .map() */}
         {!isLoading && !error && filteredProducts.length > 0 && (
-          <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "20px" }}>
+          <div className="product-grid">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

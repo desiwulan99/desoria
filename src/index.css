@@ -1,4 +1,3 @@
-/* Globals & Font Modern */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 * {
@@ -9,155 +8,153 @@
 }
 
 body {
-  background-color: #f4f4f6;
-  color: #222222;
+  background-color: #fbfbfc;
+  color: #2c3e50;
 }
 
-/* Navbar ala Shopee dengan Gradasi Pink ke Biru */
+/* Navbar Minimalis Elegan */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 5%;
-  background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 40%, #70a1ff 100%);
+  padding: 1.2rem 8%;
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f4;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-logo {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 1px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #ff758c 0%, #70a1ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  cursor: pointer;
 }
 
-/* Search Bar Lebar ala Shopee */
-.search-bar-input {
-  width: 450px;
-  max-width: 100%;
-  padding: 0.75rem 1.2rem;
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.category-menu-mini button {
+  background: none;
   border: none;
-  border-radius: 4px; /* Sudut kotak minimalis ala Shopee */
+  margin-right: 15px;
+  font-size: 0.95rem;
+  color: #7f8c8d;
+  cursor: pointer;
+  padding-bottom: 4px;
+}
+
+.category-menu-mini button.active-nav {
+  color: #ff758c;
+  font-weight: 700;
+  border-bottom: 2px solid #ff758c;
+}
+
+/* Style Icon Keranjang */
+.cart-icon-wrapper {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.cart-icon {
+  width: 26px;
+  height: 26px;
+  color: #34495e;
+  transition: color 0.2s;
+}
+
+.cart-icon-wrapper:hover .cart-icon {
+  color: #ff758c;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+/* Tata Letak Konten Mirip Gambar */
+.container {
+  max-width: 1100px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.hero-header {
+  margin-bottom: 2rem;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: #95a5a6;
+  margin-bottom: 0.2rem;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1e272e;
+}
+
+/* Baris Filter Horizontal Bar */
+.browse-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 2.5rem;
+  background: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f0f0f4;
+}
+
+.browse-label {
+  font-size: 0.95rem;
+  color: #7f8c8d;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.search-input-modern {
+  flex-grow: 1;
+  border: none;
   outline: none;
   font-size: 0.95rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  color: #2c3e50;
+  padding: 0.2rem;
 }
 
-.search-bar-input:focus {
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
-}
-
-/* Container Utama */
-.container {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
-
-.container h2 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #555;
-  text-transform: uppercase;
-  border-bottom: 2px solid #ff758c;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Grid Produk Rapat Maksimal ala Shopee */
+/* Grid & Card Modifikasi */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
 }
 
-/* Card Produk Kotak ala Shopee */
 .product-card {
   background: #ffffff;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  position: relative;
+  border: 1px solid #f0f0f4;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .product-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #ff758c;
-}
-
-/* Pembungkus Gambar Menghindari Gambar Rusak/Pecah */
-.product-card img {
-  width: 100%;
-  height: 185px;
-  object-fit: cover;
-  background-color: #fafafa;
-}
-
-/* Area Detail Text di dalam Card */
-.product-card-content {
-  padding: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  justify-content: space-between;
-}
-
-/* Judul Potong 2 Baris ala Shopee */
-.product-card h3 {
-  font-size: 0.88rem;
-  font-weight: 400;
-  color: #222;
-  line-height: 1.3;
-  height: 2.6rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 0.5rem;
-}
-
-/* Harga Orange/Pink Bold */
-.product-card p {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #ff4d4d;
-  margin-bottom: 0.75rem;
-}
-
-/* Tombol Detail Tipis Minimalis */
-.btn-detail {
-  display: block;
-  text-align: center;
-  background: transparent;
-  color: #ff758c;
-  border: 1px solid #ff758c;
-  text-decoration: none;
-  padding: 0.4rem;
-  border-radius: 4px;
-  font-size: 0.82rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.btn-detail:hover {
-  background: linear-gradient(135deg, #ff758c 0%, #70a1ff 100%);
-  color: #ffffff;
-  border-color: transparent;
-}
-
-/* State UI */
-.loading-state, .error-state, .empty-state, .not-found-state {
-  text-align: center;
-  padding: 3rem;
-  background: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
 }
