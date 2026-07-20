@@ -1,95 +1,78 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { fetchProductById } from "../services/api";
-import LoadingState from "../components/LoadingState";
-import ErrorState from "../components/ErrorState";
+import Button from "../components/Button";
+import EmptyState from "../components/EmptyState";
 
 export default function DetailPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    // Deklarasi fungsi async langsung di dalam useEffect agar dependensi bersih
-    const loadDetail = async () => {
-      if (!id) return;
-      
-      try {
-        setIsLoading(true);
-        setError("");
-        const data = await fetchProductById(id);
-        setProduct(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Gagal memuat detail produk.");
-      } finally {
-        setIsLoading(false); // Memastikan loading berhenti baik sukses maupun gagal
-      }
-    };
+    fetch("https://sistech-ecommerce-api.leficullen.xyz/api/products")
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.data) {
+          const found = result.data.find((p) => String(p.id) === String(id));
+          setProduct(found || null);
+        }
+      })
+      .catch((err) => console.error("Error fetching product detail:", err))
+      .finally(() => setIsLoading(false));
+  }, [id]);
 
-    loadDetail();
-  }, [id]); // Hanya memicu ulang jika ID produk di URL berubah
-
-  // Tangga Conditional UI
   if (isLoading) {
-    return <LoadingState />;
-  }
-
-  if (error) {
-    return <ErrorState message={error} onRetry={() => window.location.reload()} />;
-  }
-
-  if (!product) {
     return (
-      <div className="container" style={{ padding: "20px", textAlign: "center" }}>
-        <p>Produk tidak ditemukan.</p>
-        <Link to="/" style={{ color: "#db2777", textDecoration: "underline" }}>
-          Kembali ke Katalog
-        </Link>
+      <div className="container detail-loading">
+        <div className="skeleton-block detail-image-skeleton"></div>
+        <div className="detail-info-skeleton">
+          <div className="skeleton-block title-skeleton"></div>
+          <div className="skeleton-block price-skeleton"></div>
+          <div className="skeleton-block text-skeleton"></div>
+        </div>
       </div>
     );
   }
 
+  if (!product) {
+    return (
+      <div className="container">
+        <Link to="/" className="btn-back">Kembali ke Beranda</Link>
+        <EmptyState message="Detail produk tidak ditemukan atau ID tidak valid." />
+      </div>
+    );
+  }
+
+  const title = product.name || product.nama || "Produk Tanpa Nama";
+  const price = product.price || product.harga || 0;
+  const image = product.image_url || product.imageUrl || product.image || "https://via.placeholder.com/150";
+  const description = product.description || product.deskripsi || "Tidak ada deskripsi untuk produk ini.";
+
   return (
-    <div className="container detail-page" style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      {/* Tombol Kembali */}
-      <Link to="/" className="btn-back" style={{ display: "inline-block", marginBottom: "20px", color: "#db2777", textDecoration: "none", fontWeight: "bold" }}>
-        ← Kembali ke Katalog
+    <main className="container detail-container">
+      <Link to="/" className="btn-back">
+        &lt; Kembali ke Beranda
       </Link>
       
-      {/* Konten Utama Detail Sesuai Wireframe */}
-      <div className="detail-wrapper" style={{ display: "flex", gap: "30px", flexWrap: "wrap" }}>
-        {/* Bagian Foto */}
-        <div className="detail-image" style={{ flex: "1", minWidth: "280px" }}>
-          <img 
-            src={product.image_url || "https://via.placeholder.com/300"} 
-            alt={product.name} 
-            style={{ width: "100%", borderRadius: "8px", objectCover: "cover" }}
-          />
+      <div className="detail-layout">
+        <div className="detail-image-wrapper">
+          <img src={image} alt={title} className="detail-image" />
         </div>
         
-        {/* Bagian Informasi Text */}
-        <div className="detail-info" style={{ flex: "1.5", minWidth: "280px" }}>
-          <h1 style={{ fontSize: "2rem", marginBottom: "10px" }}>{product.name}</h1>
-          <p className="price" style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#db2777", marginBottom: "20px" }}>
-            Rp {product.price?.toLocaleString("id-ID")}
-          </p>
+        <div className="detail-info-section">
+          <h1 className="detail-title">{title}</h1>
+          <p className="detail-price">Rp {price.toLocaleString("id-ID")}</p>
+          <div className="detail-divider"></div>
+          <h4 className="section-subtitle">Deskripsi Produk</h4>
+          <p className="detail-description">{description}</p>
           
-          {/* Metadata Brand & Store (Gunakan optional chaining ?. agar tidak crash) */}
-          <div className="meta-info" style={{ borderTop: "1px solid #eee", borderBottom: "1px solid #eee", padding: "15px 0", marginBottom: "20px" }}>
-            <p style={{ margin: "5px 0" }}><strong>Brand:</strong> {product.brand?.name || "No Brand"}</p>
-            <p style={{ margin: "5px 0" }}><strong>Store:</strong> {product.store?.name || "Official Store"}</p>
-          </div>
-          
-          {/* Deskripsi */}
-          <div className="description">
-            <h3 style={{ fontSize: "1.2rem", marginBottom: "10px" }}>Deskripsi Produk</h3>
-            <p style={{ color: "#555", lineHeight: "1.6" }}>
-              {product.description || "Tidak ada deskripsi produk untuk item ini."}
-            </p>
+          <div className="detail-action-wrapper">
+            <Button onClick={() => console.log(`Ditambahkan ke keranjang dari detail: ${product.id}`)}>
+              Masukkan ke Keranjang
+            </Button>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
