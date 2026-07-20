@@ -4,6 +4,7 @@ import { CartContext } from "../context/CartContext";
 import { formatRupiah } from "../utils/format";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
+import { Trash2 } from "lucide-react";
 
 export default function CartPage() {
   const { cart, updateQty, removeFromCart, clearCart, totalPrice } = useContext(CartContext);
@@ -20,7 +21,7 @@ export default function CartPage() {
       <h2 className="section-main-heading">Keranjang Belanja</h2>
 
       {showNotification && (
-        <div className="checkout-notification">Barang anda segera disiapkan 🎉</div>
+        <div className="checkout-notification">Barang anda segera disiapkan</div>
       )}
 
       {cart.length === 0 ? (
@@ -48,7 +49,7 @@ export default function CartPage() {
                 </div>
                 <span className="cart-page-item-subtotal">{formatRupiah(item.price * item.qty)}</span>
                 <button className="item-remove-btn" onClick={() => removeFromCart(item.id)} aria-label="Hapus">
-                  🗑
+                  <Trash2 size={18} />
                 </button>
               </div>
             ))}

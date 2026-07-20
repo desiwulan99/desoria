@@ -48,11 +48,7 @@ export default function HomePage({
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-
-  // PENTING: fetch produk hanya SEKALI saat halaman dibuka.
-  // Search / filter kategori / sort semuanya diproses di client (useMemo di bawah),
-  // bukan lewat request baru ke server -- ini yang bikin data tidak lagi
-  // "hilang" tiap kali kamu mengetik atau klik kategori.
+  
   const loadProducts = async () => {
     try {
       setIsLoading(true);
@@ -77,8 +73,6 @@ export default function HomePage({
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
-      // Cocokkan kategori lewat slug ATAU id, apa pun bentuk data dari API,
-      // supaya filter tetap jalan walau field-nya berbeda dari dugaan.
       const matchesCategory = activeCategory
         ? product.category?.slug === activeCategory ||
           product.category?.id === activeCategory ||

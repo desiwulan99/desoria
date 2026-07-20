@@ -2,7 +2,7 @@ export default function Button({
   children,
   onClick,
   type = "button",
-  variant = "primary", // "primary" | "outline" | "ghost" | "danger"
+  variant = "primary", 
   fullWidth = true,
   disabled = false,
   className = "",

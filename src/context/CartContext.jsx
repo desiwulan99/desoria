@@ -17,7 +17,6 @@ export const CartProvider = ({ children }) => {
       }
       return [...prev, { ...product, qty: 1 }];
     });
-    // Sidebar otomatis terbuka sebentar sebagai feedback visual saat menambah barang
     setIsCartOpen(true);
   };
 
@@ -25,7 +24,6 @@ export const CartProvider = ({ children }) => {
     setCart((prev) => prev.filter((item) => item.id !== productId));
   };
 
-  // qty <= 0 otomatis menghapus item dari keranjang
   const updateQty = (productId, qty) => {
     setCart((prev) => {
       if (qty <= 0) return prev.filter((item) => item.id !== productId);

@@ -17,7 +17,6 @@ export default function SidebarCart() {
 
   return (
     <>
-      {/* Backdrop: klik di luar sidebar untuk menutup (mobile-friendly) */}
       {isCartOpen && <div className="sidebar-backdrop" onClick={onClose} />}
 
       <div className={`sidebar-container ${isCartOpen ? "" : "sidebar-hidden"}`}>
