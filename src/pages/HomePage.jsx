@@ -12,10 +12,30 @@ import {
   Dumbbell,
   Package,
 } from "lucide-react";
+import { fetchProducts } from "../services/api";
 import ProductCard from "../components/ProductCard";
 import SkeletonLoader from "../components/SkeletonLoader";
+import ErrorState from "../components/ErrorState";
 import EmptyState from "../components/EmptyState";
-import { fetchProducts } from "../services/api.js";
+
+const CATEGORY_ICONS = {
+  beauty: { Icon: Sparkles, color: "#ec4899" },
+  beverages: { Icon: Coffee, color: "#f59e0b" },
+  "books-and-stationery": { Icon: BookOpen, color: "#3b82f6" },
+  electronics: { Icon: Smartphone, color: "#8b5cf6" },
+  fashion: { Icon: Shirt, color: "#ef4444" },
+  groceries: { Icon: ShoppingBasket, color: "#10b981" },
+  "home-appliances": { Icon: Home, color: "#6366f1" },
+  "muslim-wear": { Icon: Heart, color: "#d946ef" },
+  snacks: { Icon: Cookie, color: "#f97316" },
+  sports: { Icon: Dumbbell, color: "#06b6d4" },
+};
+
+function CategoryIcon({ slug }) {
+  const entry = CATEGORY_ICONS[slug] || { Icon: Package, color: "#64748b" };
+  const { Icon, color } = entry;
+  return <Icon size={28} strokeWidth={1.5} color={color} />;
+}
 
 export default function HomePage({
   searchTerm,
@@ -24,109 +44,88 @@ export default function HomePage({
   categories,
   sortBy,
   setSortBy,
-  selectedCity,
 }) {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    let isMounted = true;
-    const loadProducts = async () => {
+  // PENTING: fetch produk hanya SEKALI saat halaman dibuka.
+  // Search / filter kategori / sort semuanya diproses di client (useMemo di bawah),
+  // bukan lewat request baru ke server -- ini yang bikin data tidak lagi
+  // "hilang" tiap kali kamu mengetik atau klik kategori.
+  const loadProducts = async () => {
+    try {
       setIsLoading(true);
-      try {
-        const data = await fetchProducts({
-          category: activeCategory,
-          city: selectedCity,
-          search: searchTerm,
-        });
-        if (isMounted) {
-          setProducts(Array.isArray(data) ? data : []);
-        }
-      } catch (err) {
-        console.error("Gagal memuat produk:", err);
-        if (isMounted) setProducts([]);
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-    loadProducts();
-    return () => {
-      isMounted = false;
-    };
-  }, [activeCategory, selectedCity, searchTerm]);
-
-  const getCategoryIcon = (slug) => {
-    const iconProps = { size: 28, strokeWidth: 1.5 };
-    switch (slug) {
-      case "beauty":
-        return <Sparkles {...iconProps} color="#ec4899" />;
-      case "beverages":
-        return <Coffee {...iconProps} color="#f59e0b" />;
-      case "books-and-stationery":
-        return <BookOpen {...iconProps} color="#3b82f6" />;
-      case "electronics":
-        return <Smartphone {...iconProps} color="#8b5cf6" />;
-      case "fashion":
-        return <Shirt {...iconProps} color="#ef4444" />;
-      case "groceries":
-        return <ShoppingBasket {...iconProps} color="#10b981" />;
-      case "home-appliances":
-        return <Home {...iconProps} color="#6366f1" />;
-      case "muslim-wear":
-        return <Heart {...iconProps} color="#d946ef" />;
-      case "snacks":
-        return <Cookie {...iconProps} color="#f97316" />;
-      case "sports":
-        return <Dumbbell {...iconProps} color="#06b6d4" />;
-      default:
-        return <Package {...iconProps} color="#64748b" />;
+      setError("");
+      const data = await fetchProducts();
+      setProducts(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan sistem");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const groupedProducts = useMemo(() => {
-    if (!products.length) return {};
-    let sorted = [...products];
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- pola fetch-saat-mount standar (lihat materi Fetch & APIs)
+    loadProducts();
+  }, []);
+
+  const visibleProducts = useMemo(() => {
+    const filtered = products.filter((product) => {
+      const matchesSearch = (product.name || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+      // Cocokkan kategori lewat slug ATAU id, apa pun bentuk data dari API,
+      // supaya filter tetap jalan walau field-nya berbeda dari dugaan.
+      const matchesCategory = activeCategory
+        ? product.category?.slug === activeCategory ||
+          product.category?.id === activeCategory ||
+          product.category_id === activeCategory
+        : true;
+
+      return matchesSearch && matchesCategory;
+    });
+
+    const sorted = [...filtered];
     if (sortBy === "price-asc") sorted.sort((a, b) => a.price - b.price);
     else if (sortBy === "price-desc") sorted.sort((a, b) => b.price - a.price);
-    else if (sortBy === "name-asc")
-      sorted.sort((a, b) => a.name.localeCompare(b.name));
-    else if (sortBy === "name-desc")
-      sorted.sort((a, b) => b.name.localeCompare(a.name));
+    else if (sortBy === "name-asc") sorted.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    else if (sortBy === "name-desc") sorted.sort((a, b) => (b.name || "").localeCompare(a.name || ""));
 
-    return sorted.reduce((acc, product) => {
-      const catName = product.category?.name || "Lainnya";
-      if (!acc[catName]) acc[catName] = [];
-      acc[catName].push(product);
-      return acc;
-    }, {});
-  }, [products, sortBy]);
+    return sorted;
+  }, [products, searchTerm, activeCategory, sortBy]);
+
+  const resetFilters = () => {
+    setActiveCategory(null);
+    setSortBy("");
+  };
 
   return (
     <main className="container flex">
       <div className="flex-1">
-        <div className="hero-header" style={{ marginBottom: "2rem" }}>
+        <div className="hero-header">
           <h1 className="hero-title">Jelajahi Produk Terbaik</h1>
         </div>
+
         <div className="category-section-container">
           <div className="category-grid-menu">
             {categories.map((cat) => (
               <div
                 key={cat.id}
                 className={`category-grid-item ${activeCategory === cat.slug ? "active-grid-cat" : ""}`}
-                onClick={() =>
-                  setActiveCategory(
-                    activeCategory === cat.slug ? null : cat.slug,
-                  )
-                }
+                onClick={() => setActiveCategory(activeCategory === cat.slug ? null : cat.slug)}
               >
                 <div className="category-icon-wrapper">
-                  {getCategoryIcon(cat.slug)}
+                  <CategoryIcon slug={cat.slug} />
                 </div>
                 <span>{cat.name}</span>
               </div>
             ))}
           </div>
         </div>
+
         <div className="sort-section-container">
           <label htmlFor="sort-select">Urutkan Berdasarkan:</label>
           <select
@@ -142,28 +141,36 @@ export default function HomePage({
             <option value="name-desc">Nama: Z-A</option>
           </select>
         </div>
-        {isLoading ? (
-          <SkeletonLoader count={8} />
-        ) : Object.keys(groupedProducts).length === 0 ? (
-          <EmptyState message="Produk tidak ditemukan." />
-        ) : (
-          Object.keys(groupedProducts).map((catName) => (
-            <section
-              key={catName}
-              className="home-container"
-              style={{ marginBottom: "2rem" }}
-            >
-              <div className="category-title-wrapper">
-                <span className="category-line"></span>
-                <h2>{catName}</h2>
-              </div>
+
+        {isLoading && <SkeletonLoader count={8} />}
+
+        {!isLoading && error && <ErrorState message={error} onRetry={loadProducts} />}
+
+        {!isLoading && !error && (
+          <section className="home-container">
+            <div className="category-title-wrapper">
+              <span className="category-line"></span>
+              <h2>
+                {activeCategory
+                  ? categories.find((c) => c.slug === activeCategory)?.name
+                  : "Semua Produk"}
+              </h2>
+            </div>
+
+            {visibleProducts.length === 0 ? (
+              <EmptyState
+                message="Produk tidak ditemukan."
+                actionLabel="Reset Filter"
+                onAction={resetFilters}
+              />
+            ) : (
               <div className="product-grid">
-                {groupedProducts[catName].map((product) => (
+                {visibleProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
-            </section>
-          ))
+            )}
+          </section>
         )}
       </div>
     </main>
