@@ -1,25 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
+import { fetchProductById } from "../services/api";
+import { CartContext } from "../context/CartContext";
+import { formatRupiah } from "../utils/format";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
+import ErrorState from "../components/ErrorState";
 
 export default function DetailPage() {
   const { id } = useParams();
+  const { addToCart } = useContext(CartContext);
+
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [justAdded, setJustAdded] = useState(false);
+
+  const loadDetail = async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+      const data = await fetchProductById(id);
+      setProduct(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal memuat detail produk.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch("https://sistech-ecommerce-api.leficullen.xyz/api/products")
-      .then((res) => res.json())
-      .then((result) => {
-        if (result.data) {
-          const found = result.data.find((p) => String(p.id) === String(id));
-          setProduct(found || null);
-        }
-      })
-      .catch((err) => console.error("Error fetching product detail:", err))
-      .finally(() => setIsLoading(false));
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- pola fetch-saat-mount standar (lihat materi Fetch & APIs)
+    loadDetail();
   }, [id]);
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1500);
+  };
 
   if (isLoading) {
     return (
@@ -34,41 +53,52 @@ export default function DetailPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="container">
+        <Link to="/" className="btn-back">&lt; Kembali ke Beranda</Link>
+        <ErrorState message={error} onRetry={loadDetail} />
+      </div>
+    );
+  }
+
   if (!product) {
     return (
       <div className="container">
-        <Link to="/" className="btn-back">Kembali ke Beranda</Link>
+        <Link to="/" className="btn-back">&lt; Kembali ke Beranda</Link>
         <EmptyState message="Detail produk tidak ditemukan atau ID tidak valid." />
       </div>
     );
   }
 
-  const title = product.name || product.nama || "Produk Tanpa Nama";
-  const price = product.price || product.harga || 0;
-  const image = product.image_url || product.imageUrl || product.image || "https://via.placeholder.com/150";
-  const description = product.description || product.deskripsi || "Tidak ada deskripsi untuk produk ini.";
+  const image = product.imageUrl || "https://placehold.co/600x600?text=No+Image";
 
   return (
     <main className="container detail-container">
       <Link to="/" className="btn-back">
         &lt; Kembali ke Beranda
       </Link>
-      
+
       <div className="detail-layout">
         <div className="detail-image-wrapper">
-          <img src={image} alt={title} className="detail-image" />
+          <img src={image} alt={product.name} className="detail-image" />
         </div>
-        
+
         <div className="detail-info-section">
-          <h1 className="detail-title">{title}</h1>
-          <p className="detail-price">Rp {price.toLocaleString("id-ID")}</p>
+          {product.category?.name && (
+            <p className="product-category-label">{product.category.name}</p>
+          )}
+          <h1 className="detail-title">{product.name}</h1>
+          <p className="detail-price">{formatRupiah(product.price)}</p>
           <div className="detail-divider"></div>
           <h4 className="section-subtitle">Deskripsi Produk</h4>
-          <p className="detail-description">{description}</p>
-          
+          <p className="detail-description">
+            {product.description || "Tidak ada deskripsi untuk produk ini."}
+          </p>
+
           <div className="detail-action-wrapper">
-            <Button onClick={() => console.log(`Ditambahkan ke keranjang dari detail: ${product.id}`)}>
-              Masukkan ke Keranjang
+            <Button variant={justAdded ? "success" : "primary"} onClick={handleAddToCart}>
+              {justAdded ? "Ditambahkan ke Keranjang ✓" : "Masukkan ke Keranjang"}
             </Button>
           </div>
         </div>

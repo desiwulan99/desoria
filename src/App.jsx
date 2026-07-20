@@ -1,67 +1,59 @@
 import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import SidebarCart from "./components/SidebarCart";
 import HomePage from "./pages/HomePage";
 import DetailPage from "./pages/DetailPage";
-import SidebarCart from "./components/SidebarCart"; 
+import CartPage from "./pages/CartPage";
 import { CartProvider } from "./context/CartContext";
+import { fetchCategories } from "./services/api";
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState(null);
   const [categories, setCategories] = useState([]);
   const [sortBy, setSortBy] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  const [isCartOpen, setIsCartOpen] = useState(false);
 
+  // Kategori hanya diambil sekali di sini, lalu dibagikan lewat props
+  // ke Navbar & HomePage -- tidak ada fetch dobel.
   useEffect(() => {
-    fetch("https://sistech-ecommerce-api.leficullen.xyz/api/categories")
-      .then((res) => res.json())
-      .then((result) => {
-        if (result.data) setCategories(result.data);
-      })
-      .catch((err) => console.error("Error fetching categories:", err));
+    fetchCategories()
+      .then(setCategories)
+      .catch((err) => console.error("Gagal memuat kategori:", err));
   }, []);
 
   return (
     <CartProvider>
       <div className="app-container">
-        <Navbar 
-          searchTerm={searchTerm} 
-          setSearchTerm={setSearchTerm} 
+        <Navbar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
           activeCategory={activeCategory}
           setActiveCategory={setActiveCategory}
           categories={categories}
-          toggleCart={() => setIsCartOpen(!isCartOpen)}
         />
-        
-        <div style={{ display: "flex", width: "100%", position: "relative", overflowX: "hidden" }}>
-          <main className="main-content" style={{ flex: 1 }}>
-            <Routes>
-              <Route 
-                path="/" 
-                element={
-                  <HomePage 
-                    searchTerm={searchTerm} 
-                    activeCategory={activeCategory}
-                    setActiveCategory={setActiveCategory}
-                    categories={categories}
-                    sortBy={sortBy}
-                    setSortBy={setSortBy}
-                    selectedBrand={selectedBrand}
-                    setSelectedBrand={setSelectedBrand}
-                    selectedCity={selectedCity}
-                    setSelectedCity={setSelectedCity}
-                  />
-                } 
-              />
-              <Route path="/product/:id" element={<DetailPage />} />
-            </Routes>
-          </main>
-          
-          <SidebarCart isOpen={isCartOpen} />
-        </div>
+
+        <main className="main-content">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <HomePage
+                  searchTerm={searchTerm}
+                  activeCategory={activeCategory}
+                  setActiveCategory={setActiveCategory}
+                  categories={categories}
+                  sortBy={sortBy}
+                  setSortBy={setSortBy}
+                />
+              }
+            />
+            <Route path="/product/:id" element={<DetailPage />} />
+            <Route path="/cart" element={<CartPage />} />
+          </Routes>
+        </main>
+
+        <SidebarCart />
       </div>
     </CartProvider>
   );

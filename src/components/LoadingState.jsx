@@ -1,9 +1,8 @@
-export default function LoadingState() {
+export default function LoadingState({ message = "Sedang memuat data Desoria..." }) {
   return (
-    <div className="loading-state" style={{ textAlign: "center", padding: "40px" }}>
-      <p style={{ color: "#db2777", fontSize: "1.2rem", fontWeight: "bold" }}>
-        Sedang memuat data produk Desoria...
-      </p>
+    <div className="loading-state" role="status" aria-live="polite">
+      <span className="spinner" />
+      <p>{message}</p>
     </div>
   );
 }

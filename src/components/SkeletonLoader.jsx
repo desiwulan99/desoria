@@ -1,4 +1,4 @@
-export default function SkeletonLoader({ count = 4 }) {
+export default function SkeletonLoader({ count = 8 }) {
   return (
     <div className="product-grid">
       {Array.from({ length: count }).map((_, index) => (
