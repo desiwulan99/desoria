@@ -44,11 +44,15 @@ export default function HomePage({
   categories,
   sortBy,
   setSortBy,
+  activeStore,
+  activeBrand,
+  stores = [],
+  brands = [],
 }) {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  
+
   const loadProducts = async () => {
     try {
       setIsLoading(true);
@@ -79,7 +83,20 @@ export default function HomePage({
           product.category_id === activeCategory
         : true;
 
-      return matchesSearch && matchesCategory;
+      // Filter tambahan: toko & brand (mengikuti pola matchesCategory di atas).
+      const matchesStore = activeStore
+        ? product.store?.slug === activeStore ||
+          product.store?.id === activeStore ||
+          product.store_id === activeStore
+        : true;
+
+      const matchesBrand = activeBrand
+        ? product.brand?.slug === activeBrand ||
+          product.brand?.id === activeBrand ||
+          product.brand_id === activeBrand
+        : true;
+
+      return matchesSearch && matchesCategory && matchesStore && matchesBrand;
     });
 
     const sorted = [...filtered];
@@ -89,12 +106,19 @@ export default function HomePage({
     else if (sortBy === "name-desc") sorted.sort((a, b) => (b.name || "").localeCompare(a.name || ""));
 
     return sorted;
-  }, [products, searchTerm, activeCategory, sortBy]);
+  }, [products, searchTerm, activeCategory, sortBy, activeStore, activeBrand]);
 
   const resetFilters = () => {
     setActiveCategory(null);
     setSortBy("");
   };
+
+  const activeStoreName = activeStore
+    ? stores.find((s) => s.slug === activeStore)?.name
+    : null;
+  const activeBrandName = activeBrand
+    ? brands.find((b) => b.slug === activeBrand)?.name
+    : null;
 
   return (
     <main className="container flex">
@@ -120,21 +144,20 @@ export default function HomePage({
           </div>
         </div>
 
-        <div className="sort-section-container">
-          <label htmlFor="sort-select">Urutkan Berdasarkan:</label>
-          <select
-            id="sort-select"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="sort-dropdown"
-          >
-            <option value="">Default</option>
-            <option value="price-asc">Harga: Rendah ke Tinggi</option>
-            <option value="price-desc">Harga: Tinggi ke Rendah</option>
-            <option value="name-asc">Nama: A-Z</option>
-            <option value="name-desc">Nama: Z-A</option>
-          </select>
-        </div>
+        {(activeStoreName || activeBrandName) && (
+          <div className="active-filter-chips">
+            {activeStoreName && (
+              <span className="filter-chip">
+                Toko: {activeStoreName}
+              </span>
+            )}
+            {activeBrandName && (
+              <span className="filter-chip">
+                Brand: {activeBrandName}
+              </span>
+            )}
+          </div>
+        )}
 
         {isLoading && <SkeletonLoader count={8} />}
 

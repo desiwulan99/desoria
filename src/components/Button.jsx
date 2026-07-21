@@ -14,7 +14,7 @@ export default function Button({
     fullWidth ? "btn-full" : "",
     className,
   ]
-    .filter(Boolean)
+    .filter(Boolean) 
     .join(" ");
 
   return (

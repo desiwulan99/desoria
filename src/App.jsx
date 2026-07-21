@@ -6,7 +6,7 @@ import HomePage from "./pages/HomePage";
 import DetailPage from "./pages/DetailPage";
 import CartPage from "./pages/CartPage";
 import { CartProvider } from "./context/CartContext";
-import { fetchCategories } from "./services/api";
+import { fetchCategories, fetchStores, fetchBrands } from "./services/api";
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,12 +14,33 @@ export default function App() {
   const [categories, setCategories] = useState([]);
   const [sortBy, setSortBy] = useState("");
 
+  // Filter baru: toko (store) & brand -- ditambahkan berdampingan dengan
+  // filter kategori yang sudah ada, tidak menggantikannya.
+  const [activeStore, setActiveStore] = useState(null);
+  const [activeBrand, setActiveBrand] = useState(null);
+  const [stores, setStores] = useState([]);
+  const [brands, setBrands] = useState([]);
+
   // Kategori hanya diambil sekali di sini, lalu dibagikan lewat props
   // ke Navbar & HomePage -- tidak ada fetch dobel.
   useEffect(() => {
     fetchCategories()
       .then(setCategories)
       .catch((err) => console.error("Gagal memuat kategori:", err));
+  }, []);
+
+  // Toko & brand diambil dengan pola yang sama seperti kategori,
+  // sekali saat App mount, lalu dibagikan lewat props.
+  useEffect(() => {
+    fetchStores()
+      .then(setStores)
+      .catch((err) => console.error("Gagal memuat toko:", err));
+  }, []);
+
+  useEffect(() => {
+    fetchBrands()
+      .then(setBrands)
+      .catch((err) => console.error("Gagal memuat brand:", err));
   }, []);
 
   return (
@@ -31,6 +52,14 @@ export default function App() {
           activeCategory={activeCategory}
           setActiveCategory={setActiveCategory}
           categories={categories}
+          stores={stores}
+          activeStore={activeStore}
+          setActiveStore={setActiveStore}
+          brands={brands}
+          activeBrand={activeBrand}
+          setActiveBrand={setActiveBrand}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
         />
 
         <main className="main-content">
@@ -45,6 +74,10 @@ export default function App() {
                   categories={categories}
                   sortBy={sortBy}
                   setSortBy={setSortBy}
+                  activeStore={activeStore}
+                  activeBrand={activeBrand}
+                  stores={stores}
+                  brands={brands}
                 />
               }
             />

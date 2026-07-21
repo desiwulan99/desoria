@@ -13,6 +13,8 @@ function extractArray(payload) {
 function normalizeProduct(product) {
   if (!product) return product;
   const category = product.category || null;
+  const store = product.store || null;
+  const brand = product.brand || null;
   return {
     ...product,
     price: Number(product.price ?? product.harga ?? 0),
@@ -26,12 +28,26 @@ function normalizeProduct(product) {
       ? { ...category, slug: category.slug || category.id }
       : null,
     category_id: product.category_id ?? category?.id ?? null,
+    store: store ? { ...store, slug: store.slug || store.id } : null,
+    store_id: product.store_id ?? store?.id ?? null,
+    brand: brand ? { ...brand, slug: brand.slug || brand.id } : null,
+    brand_id: product.brand_id ?? brand?.id ?? null,
   };
 }
 
 function normalizeCategory(cat) {
   if (!cat) return cat;
   return { ...cat, slug: cat.slug || cat.id };
+}
+
+function normalizeStore(store) {
+  if (!store) return store;
+  return { ...store, slug: store.slug || store.id };
+}
+
+function normalizeBrand(brand) {
+  if (!brand) return brand;
+  return { ...brand, slug: brand.slug || brand.id };
 }
 
 async function getJson(path, fallbackMessage) {
@@ -61,4 +77,16 @@ export async function fetchProductById(id) {
 export async function fetchCategories() {
   const payload = await getJson("/categories", "Gagal memuat kategori");
   return extractArray(payload).map(normalizeCategory);
+}
+
+// Endpoint baru: GET /api/stores -- daftar seller/toko di marketplace
+export async function fetchStores() {
+  const payload = await getJson("/stores", "Gagal memuat daftar toko");
+  return extractArray(payload).map(normalizeStore);
+}
+
+// Endpoint baru: GET /api/brands -- daftar brand produk
+export async function fetchBrands() {
+  const payload = await getJson("/brands", "Gagal memuat daftar brand");
+  return extractArray(payload).map(normalizeBrand);
 }
