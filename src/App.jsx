@@ -14,23 +14,17 @@ export default function App() {
   const [categories, setCategories] = useState([]);
   const [sortBy, setSortBy] = useState("");
 
-  // Filter baru: toko (store) & brand -- ditambahkan berdampingan dengan
-  // filter kategori yang sudah ada, tidak menggantikannya.
   const [activeStore, setActiveStore] = useState(null);
   const [activeBrand, setActiveBrand] = useState(null);
   const [stores, setStores] = useState([]);
   const [brands, setBrands] = useState([]);
 
-  // Kategori hanya diambil sekali di sini, lalu dibagikan lewat props
-  // ke Navbar & HomePage -- tidak ada fetch dobel.
   useEffect(() => {
     fetchCategories()
       .then(setCategories)
       .catch((err) => console.error("Gagal memuat kategori:", err));
   }, []);
 
-  // Toko & brand diambil dengan pola yang sama seperti kategori,
-  // sekali saat App mount, lalu dibagikan lewat props.
   useEffect(() => {
     fetchStores()
       .then(setStores)

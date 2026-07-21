@@ -5,9 +5,6 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
 
 .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-/* ==========================================
-   HEADER & NAVBAR
-   ========================================== */
 .desoria-header {
   background: linear-gradient(90deg, #021A54 0%, #7768c4 50%, #021A54 100%);
   padding: 8px 0 14px 0;
@@ -157,9 +154,6 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
   transition: transform 0.2s ease;
 }
 
-/* ==========================================
-   NAVBAR FILTER CONTROLS (Toko / Brand / Urutkan)
-   ========================================== */
 .mobile-menu-toggle {
   display: none;
   align-items: center;
@@ -268,9 +262,6 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
   border-radius: 20px;
 }
 
-/* ==========================================
-   CATEGORY GRID
-   ========================================== */
 .category-section-container {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -312,9 +303,6 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
 
 .category-grid-item span { font-size: 0.8rem; color: #334155; font-weight: 500; line-height: 1.2; }
 
-/* ==========================================
-   SORT
-   ========================================== */
 .sort-section-container {
   margin: 20px 0;
   display: flex;
@@ -338,9 +326,6 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
 
 .sort-dropdown:focus { border-color: #021A54; }
 
-/* ==========================================
-   PRODUCT CARD
-   ========================================== */
 .product-card {
   background: #ffffff;
   border-radius: 20px;
@@ -397,9 +382,6 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
 
 .product-card-content .price, .price { font-size: 0.9rem; font-weight: 700; color: #021A54; margin: auto 0 12px 0; }
 
-/* ==========================================
-   BUTTON (reusable)
-   ========================================== */
 .btn {
   border: none;
   padding: 9px 18px;
@@ -431,9 +413,6 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
 .btn-pop { animation: pop 0.25s ease; }
 @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
 
-/* ==========================================
-   HOME LAYOUT / GRID
-   ========================================== */
 .hero-header { padding: 30px 0 10px; }
 .hero-title { font-size: 1.9rem; font-weight: 800; color: #021A54; margin: 0; }
 
@@ -453,9 +432,6 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
 
 @keyframes fadeInSmooth { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ==========================================
-   LOADING / EMPTY / ERROR STATES
-   ========================================== */
 .loading-state, .not-found-state, .error-state {
   text-align: center;
   padding: 50px 20px;
@@ -497,9 +473,6 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
 .price-skeleton { width: 50%; height: 1rem; margin-bottom: 12px; }
 .button-skeleton { width: 100%; height: 36px; border-radius: 25px; }
 
-/* ==========================================
-   DETAIL PAGE
-   ========================================== */
 .detail-container { margin: 30px auto; }
 
 .btn-back {
@@ -543,15 +516,9 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
 
 .section-main-heading { font-size: 1.6rem; font-weight: 700; color: #1a1a1a; margin: 30px 0 25px; }
 
-/* ==========================================
-   APP LAYOUT
-   ========================================== */
 .app-container { display: flex; flex-direction: column; min-height: 100vh; }
 .main-content { flex: 1; width: 100%; }
 
-/* ==========================================
-   SIDEBAR CART
-   ========================================== */
 .sidebar-backdrop {
   position: fixed;
   inset: 0;
