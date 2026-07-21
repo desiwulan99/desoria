@@ -35,10 +35,10 @@ export default function Navbar({
     <header className="desoria-header">
       <div className="top-bar">
         <div className="top-bar-left">
-          <span>Seller Centre</span> | <span>Download</span> | <span>Ikuti kami di</span>
+          <span>Seller Centre</span> | <span>Download</span>
         </div>
         <div className="top-bar-right">
-          <span>Notifikasi</span> | <span>Bantuan</span> | <span className="username">dezii_wuln</span>
+          <span>Notifikasi</span> | <span>Bantuan</span> | <span className="username">Profile</span>
         </div>
       </div>
 
