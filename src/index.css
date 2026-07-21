@@ -645,11 +645,19 @@ body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f
 
 @media (max-width: 900px) {
   .mobile-menu-toggle { display: flex; }
-  .nav-tags { display: none; }
   .nav-filter-row { display: none; }
-  .search-and-tags { flex-grow: 1; }
-  .main-nav { gap: 14px; }
-  .logo-section { font-size: 1.6rem; }
+  .main-nav {
+    flex-wrap: wrap;
+    gap: 10px 14px;
+  }
+  .mobile-menu-toggle { order: 1; }
+  .logo-section { font-size: 1.6rem; order: 2; }
+  .cart-container { order: 3; margin-left: auto; }
+  .search-and-tags {
+    order: 4;
+    flex-basis: 100%;
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
