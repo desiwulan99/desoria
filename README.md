@@ -98,5 +98,5 @@ DESORIA/
 
 ## Deliverables
 
-- **Deployed website:** [_(add your deployment link here)_](https://github.com/desiwulan99/desoria)
-- **GitHub repository:** [_(add your public repo link here)_](https://desoria.vercel.app/)
+- **Deployed website:** (https://github.com/desiwulan99/desoria)
+- **GitHub repository:** (https://desoria.vercel.app/)
